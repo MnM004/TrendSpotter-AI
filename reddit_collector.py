@@ -1,18 +1,18 @@
+# In reddit_collector.py
+
 import praw
 import config
 from pyairtable import Table
-import google.generativeai as genai
+from groq import Groq  # <-- Import Groq
 import time
 import json
 
-# --- UPGRADED MODEL AND CONFIGURATION ---
-genai.configure(api_key=config.GEMINI_API_KEY)
-# We are now using the superior model you discovered, with a higher rate limit.
-model = genai.GenerativeModel('gemini-2.0-flash-lite')
-# ----------------------------------------
+# --- NEW GROQ CONFIGURATION ---
+client = Groq(api_key=config.GROQ_API_KEY)
+# -----------------------------
 
 def extract_product_name(title):
-    print(f"      > Asking AI to extract product name from: '{title[:60]}...'")
+    print(f"      > Asking Groq to extract product name from: '{title[:60]}...'")
     try:
         prompt = f"""
         From the following social media post title, extract only the most likely product name.
@@ -22,16 +22,25 @@ def extract_product_name(title):
 
         Title: "{title}"
         """
-        response = model.generate_content(prompt)
-        product_name = response.text.strip().replace('"', '')
+        # --- NEW GROQ API CALL ---
+        chat_completion = client.chat.completions.create(
+            messages=[{"role": "user", "content": prompt}],
+            model="llama3-8b-8192", # Using the fast model
+            temperature=0.0
+        )
+        product_name = chat_completion.choices[0].message.content.strip().replace('"', '')
+        # --- END NEW API CALL ---
+
         if product_name.lower() == 'n/a':
             return None
         return product_name
     except Exception as e:
-        print(f"        - AI extraction failed: {e}")
+        print(f"        - Groq extraction failed: {e}")
         return None
 
+# The rest of your run() function remains exactly the same!
 def run():
+    
     print("Starting Reddit Collector...")
     try:
         table = Table(config.AIRTABLE_API_KEY, config.AIRTABLE_BASE_ID, config.SOURCE_TABLE_NAME)

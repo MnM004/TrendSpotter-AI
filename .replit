@@ -3,7 +3,7 @@ modules = ["python-3.11"]
 
 [nix]
 channel = "stable-24_05"
-packages = ["glibcLocales"]
+packages = ["c-ares", "cacert", "glibcLocales", "grpc", "libxcrypt", "openssl", "pkg-config", "xcodebuild", "zlib"]
 
 [unitTest]
 language = "python3"
