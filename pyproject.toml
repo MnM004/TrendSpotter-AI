@@ -4,4 +4,12 @@ version = "0.1.0"
 description = ""
 authors = ["Your Name <you@example.com>"]
 requires-python = ">=3.11"
-dependencies = []
+dependencies = [
+    "airtable>=0.4.8",
+    "flask>=3.1.1",
+    "google-generativeai>=0.8.5",
+    "pandas>=2.3.0",
+    "praw>=7.8.1",
+    "pyairtable>=3.1.1",
+    "pytrends>=4.9.2",
+]
